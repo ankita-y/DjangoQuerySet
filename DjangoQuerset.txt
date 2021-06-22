@@ -1,0 +1,33 @@
+    '''To fetch all the records'''
+    worker = Worker.objects.all()
+    '''OR Operation - Fetching emp whose first_name is Vipul and Monika'''
+    worker = Worker.objects.filter(Q(first_name="Vipul") | Q(first_name="Monika"))
+    '''AND Operation - emp having salary greater than and specific department'''
+    worker = Worker.objects.filter(Q(salary__gt=100000) & Q(department = 'Admin'))
+    '''Less than'''
+    worker = Worker.objects.filter(Q(salary__lt=100000) & Q(department = 'Admin'))
+    '''Emp first_name starts with V'''
+    worker = Worker.objects.filter((Q(salary__gt=100000) & Q(department = 'Admin')) | Q(first_name__startswith = "V"))
+    '''Between operation'''
+    start = timezone.make_aware(timezone.datetime(year=2014, month=1, day=1))
+    end = timezone.make_aware(timezone.datetime(year=2014, month=6, day=1))
+    worker = Worker.objects.filter(joining_date__range = [start,end])
+    ''' Emp who join between date 2014-04-11 and 2014-06-12 or first_name startswith V'''
+     worker = Worker.objects.filter(Q(joining_date__range = [start,end]) | Q(first_name__startswith = "V"))
+    '''Limit the number of result in queryset'''
+    worker = Worker.objects.all()[:4]
+    worker = Worker.objects.order_by('first_name')
+    '''Employee who having maximum salary'''
+    maxsal = Worker.objects.aggregate(Max('salary'))['salary__max']
+    worker = Worker.objects.filter(salary = maxsal)
+    worker = Worker.objects.filter(salary = maxsal).first()  ///Type error object is not iterable
+    sal = Worker.objects.filter().aggregate(salary = Max('salary'))['salary'] #-->500000
+    '''Employee who having minimum salary'''
+    minsal = Worker.objects.aggregate(Min('salary'))['salary__min']
+    worker = Worker.objects.filter(salary = minsal)
+    '''Employee who having minimum or maximum salary'''
+    maxsal = Worker.objects.aggregate(Max('salary'))['salary__max']
+    minsal = Worker.objects.aggregate(Min('salary'))['salary__min']
+    worker = Worker.objects.filter(Q(salary = maxsal) & Q(salary = minsal))
+    '''Employee who having maximum salary and HR department'''
+    worker = Worker.objects.filter(Q(salary = maxsal) & Q(department = 'HR'))
